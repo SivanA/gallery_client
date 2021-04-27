@@ -1,28 +1,76 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div v-if="images.length">
+      <ImageView 
+        @mouseover="showCaption = true"
+        @mouseleave="showCaption = false"
+        :url="images[selectedIndex].url"
+      />
+      <div>
+        <div 
+          v-if="showCaption"
+          :class="{ 'slide-up' : showCaption }"
+        >
+          {{ images[selectedIndex].author }}
+        </div>
+      </div>
+      <div class="image-browser-container">
+        <ImageBrowser
+          @click="selectedIndex = $event.index"
+          :images="images.map((image) => image.url)"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { mapState } from 'vuex';
+import ImageView from './components/ImageView.vue'
+import ImageBrowser from './components/ImageBrowser'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
-  }
+    ImageView,
+    ImageBrowser,
+  },
+  data() {
+    return {
+      showCaption: false,
+      selectedIndex: 2,
+    };
+  },
+  computed: mapState(['images']),
 }
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
+
+@keyframes slide-up {
+    from {
+        padding-top: 100px;
+        opacity: .25;
+        line-height: 80px;
+    }
+    to {
+        padding-top: 0;
+        opacity: 1;
+        line-height: 25px;
+    }
+}
+
+.slide-up {
+    animation: slide-up 1.5s;
+}
+
+.image-browser-container {
+  width: 100%;
+  position: fixed;
+  bottom: 20px;
+}
+
 </style>
